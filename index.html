@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="
+        width=device-width,
+        initial-scale=1.0,
+        maximum-scale=1.0,
+        user-scalable=no
+    ">
+
+    <title>
+        Quarry Navigator
+    </title>
+
+    <!-- PWA -->
+
+    <link
+        rel="manifest"
+        href="manifest.json"
+    >
+
+    <meta
+        name="theme-color"
+        content="#061018"
+    >
+
+    <!-- Icons -->
+
+    <link
+        rel="icon"
+        href="assets/app_icon_192.png"
+    >
+
+    <link
+        rel="apple-touch-icon"
+        href="assets/app_icon_512.png"
+    >
+
+    <!-- Leaflet -->
+
+    <link
+        rel="stylesheet"
+        href="
+        https://unpkg.com/leaflet/dist/leaflet.css
+    ">
+
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <img
+            src="assets/logo.png"
+            class="logo"
+        >
+
+        <div class="title">
+            Quarry Navigator
+        </div>
+
+        <div class="subtitle">
+            Eng - Marco Demitry
+        </div>
+
+    </div>
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+        <!-- Coordinate Type -->
+
+        <select id="coordType">
+
+            <option value="wgs84">
+                WGS84
+            </option>
+
+            <option value="dms">
+                DMS
+            </option>
+
+            <option value="utm">
+                UTM 36N
+            </option>
+
+        </select>
+
+        <!-- WGS84 -->
+
+        <div id="wgs84Box">
+
+            <input
+                type="number"
+                step="any"
+                id="latitude"
+                placeholder="Latitude"
+            >
+
+            <input
+                type="number"
+                step="any"
+                id="longitude"
+                placeholder="Longitude"
+            >
+
+        </div>
+
+        <!-- DMS -->
+
+        <div
+            id="dmsBox"
+            class="hidden"
+        >
+
+            <!-- NORTH -->
+
+            <div class="dms-row">
+
+                <input
+                    type="number"
+                    id="nDeg"
+                    placeholder="N°"
+                >
+
+                <input
+                    type="number"
+                    id="nMin"
+                    placeholder="N'"
+                >
+
+                <input
+                    type="number"
+                    step="any"
+                    id="nSec"
+                    placeholder='N"'
+                >
+
+                <input
+                    type="text"
+                    value="N"
+                    readonly
+                >
+
+            </div>
+
+            <!-- EAST -->
+
+            <div class="dms-row">
+
+                <input
+                    type="number"
+                    id="eDeg"
+                    placeholder="E°"
+                >
+
+                <input
+                    type="number"
+                    id="eMin"
+                    placeholder="E'"
+                >
+
+                <input
+                    type="number"
+                    step="any"
+                    id="eSec"
+                    placeholder='E"'
+                >
+
+                <input
+                    type="text"
+                    value="E"
+                    readonly
+                >
+
+            </div>
+
+        </div>
+
+        <!-- UTM -->
+
+        <div
+            id="utmBox"
+            class="hidden"
+        >
+
+            <input
+                type="number"
+                step="any"
+                id="easting"
+                placeholder="Easting"
+            >
+
+            <input
+                type="number"
+                step="any"
+                id="northing"
+                placeholder="Northing"
+            >
+
+        </div>
+
+        <!-- BUTTONS -->
+
+        <div class="buttons">
+
+            <button id="startBtn">
+                Start Navigation
+            </button>
+
+            <button id="stopBtn">
+                Stop Navigation
+            </button>
+
+            <button id="centerBtn">
+                Center On Me
+            </button>
+
+            <button id="clearBtn">
+                Clear
+            </button>
+
+        </div>
+
+        <!-- SAVE LOCATION -->
+
+        <button
+            id="saveLocationBtn"
+            class="save-location-btn"
+        >
+            Save My Position
+        </button>
+
+    </div>
+
+    <!-- STATUS -->
+
+    <div class="status">
+
+        <div class="status-box">
+
+            <div class="status-title">
+                Distance
+            </div>
+
+            <div
+                class="status-value"
+                id="distanceText"
+            >
+                --
+            </div>
+
+        </div>
+
+        <div class="status-box">
+
+            <div class="status-title">
+                Status
+            </div>
+
+            <div
+                class="status-value"
+                id="statusText"
+            >
+                WAITING
+            </div>
+
+        </div>
+
+        <div class="status-box">
+
+            <div class="status-title">
+                Accuracy
+            </div>
+
+            <div
+                class="status-value"
+                id="gpsAccuracy"
+            >
+                --
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MAP -->
+
+    <div id="map"></div>
+
+    <!-- SAVED POINTS -->
+
+    <div class="saved-points-container">
+
+        <div class="saved-title">
+            Saved Points
+        </div>
+
+        <div id="savedPointsList">
+
+            <!-- Dynamic -->
+
+        </div>
+
+    </div>
+
+    <!-- COMPASS -->
+
+    <div class="compass-container">
+
+        <div class="compass">
+
+            <div
+                class="arrow"
+                id="compassArrow"
+            >
+                ▲
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        Eng - Marco Demitry
+
+        |
+
+        WhatsApp:
+        +201271985071
+
+    </div>
+
+    <!-- SOUNDS -->
+
+    <audio
+        id="beepSound"
+        src="sounds/beep.mp3"
+    ></audio>
+
+    <audio
+        id="nearSound"
+        src="sounds/near.mp3"
+    ></audio>
+
+    <audio
+        id="arrivedSound"
+        src="sounds/arrived.mp3"
+    ></audio>
+
+    <!-- Leaflet -->
+
+    <script src="
+        https://unpkg.com/leaflet/dist/leaflet.js
+    "></script>
+
+    <!-- JS FILES -->
+
+    <script src="map.js"></script>
+
+    <script src="voice.js"></script>
+
+    <script src="gps.js"></script>
+
+    <script src="app.js"></script>
+
+    <!-- SERVICE WORKER -->
+
+    <script>
+
+        if(
+            "serviceWorker"
+            in navigator
+        ){
+
+            navigator.serviceWorker
+            .register(
+                "service-worker.js"
+            );
+
+        }
+
+    </script>
+
+</body>
+
+</html>
